@@ -1,6 +1,8 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
+// npx prisma generate: Cria de forma totalmente automatizada a tipagem do schema (integração do typescript)
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,11 +13,38 @@ datasource db {
 }
 
 model User {
-  id    String @id @default(uuid())
-  name  String
-  email String @unique
+  id            String    @id @default(uuid())
+  name          String
+  email         String    @unique
+  password_hash String
+  create_at     DateTime  @default(now())
+  checkIns      CheckIn[]
 
   @@map("users")
 }
 
-// npx prisma generate: Cria de forma totalmente automatizada a tipagem do schema (integração do typescript)
+model CheckIn {
+  id           String    @id @default(uuid())
+  create_at    DateTime  @default(now())
+  validated_at DateTime?
+
+  user    User   @relation(fields: [user_id], references: [id])
+  user_id String
+
+  gym    Gym    @relation(fields: [gym_id], references: [id])
+  gym_id String
+
+  @@map("check_ins")
+}
+
+model Gym {
+  id          String    @id @default(uuid())
+  title       String
+  description String?
+  phone       String?
+  latitute    Decimal
+  longitude   Decimal
+  checkIns    CheckIn[]
+
+  @@map("gyms")
+}
