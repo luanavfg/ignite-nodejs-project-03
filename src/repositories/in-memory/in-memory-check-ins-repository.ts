@@ -6,6 +6,16 @@ import dayjs from 'dayjs'
 export class InMemoryCheckInsRepository implements CheckInsRepository {
   public items: CheckIn[] = []
 
+  async findById(id: string) {
+    const checkIn = this.items.find((item) => item.id === id)
+
+    if (!checkIn) {
+      return null
+    }
+
+    return checkIn
+  }
+
   async findByUserIdOnDate(userId: string, date: Date) {
     const startOfTheDay = dayjs(date).startOf('date') // -> Will return hour, minutes and seconds equal 00:00:00
     const endOfTheDay = dayjs(date).endOf('date') // -> Will return hour, minutes and seconds equal 23:59:59
@@ -45,6 +55,16 @@ export class InMemoryCheckInsRepository implements CheckInsRepository {
     }
 
     this.items.push(checkIn)
+    return checkIn
+  }
+
+  async save(checkIn: CheckIn) {
+    const checkInIndex = this.items.findIndex((item) => item.id === checkIn.id)
+
+    if (checkInIndex >= 0) {
+      this.items[checkInIndex] = checkIn
+    }
+
     return checkIn
   }
 }
